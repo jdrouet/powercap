@@ -11,4 +11,4 @@ keywords = ["powercap", "rapl"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-regex = "1.5.4"
+regex = { default-features = false, features = ["std", "unicode-perl"], version = "^1.5" }
