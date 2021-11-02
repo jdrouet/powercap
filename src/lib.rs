@@ -1,3 +1,5 @@
+#[cfg(feature = "modules")]
+pub mod helper;
 mod reader;
 
 pub use crate::reader::ReadError;
