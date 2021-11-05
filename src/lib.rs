@@ -66,6 +66,24 @@ impl Domain {
     pub fn max_energy_range(&self) -> Result<u64, ReadError> {
         self.max_energy_range.read()
     }
+
+    pub fn snapshot(&self) -> Result<DomainSnapshot, ReadError> {
+        Ok(DomainSnapshot {
+            id: self.id.clone(),
+            name: self.name()?,
+            enabled: self.enabled()?,
+            energy: self.energy()?,
+            max_energy_range: self.max_energy_range()?,
+        })
+    }
+}
+
+pub struct DomainSnapshot {
+    pub id: u8,
+    pub name: String,
+    pub enabled: bool,
+    pub energy: u64,
+    pub max_energy_range: u64,
 }
 
 #[derive(Debug)]
@@ -136,6 +154,28 @@ impl Socket {
         }
         Ok(res)
     }
+
+    pub fn snapshot(&self) -> Result<SocketSnapshot, ReadError> {
+        Ok(SocketSnapshot {
+            id: self.id.clone(),
+            enabled: self.enabled()?,
+            energy: self.energy()?,
+            max_energy_range: self.max_energy_range()?,
+            domains: self
+                .domains
+                .values()
+                .map(|domain| domain.snapshot())
+                .collect::<Result<Vec<DomainSnapshot>, ReadError>>()?,
+        })
+    }
+}
+
+pub struct SocketSnapshot {
+    pub id: u8,
+    pub enabled: bool,
+    pub energy: u64,
+    pub max_energy_range: u64,
+    pub domains: Vec<DomainSnapshot>,
 }
 
 #[derive(Debug)]
@@ -181,6 +221,20 @@ impl IntelRapl {
         }
         Ok(res)
     }
+
+    pub fn snapshot(&self) -> Result<IntelRaplSnapshot, ReadError> {
+        Ok(IntelRaplSnapshot {
+            sockets: self
+                .sockets
+                .values()
+                .map(|socket| socket.snapshot())
+                .collect::<Result<Vec<SocketSnapshot>, ReadError>>()?,
+        })
+    }
+}
+
+pub struct IntelRaplSnapshot {
+    pub sockets: Vec<SocketSnapshot>,
 }
 
 /// PowerCap folder representation.
@@ -227,5 +281,7 @@ mod tests {
                 assert!(domain.max_energy_range().is_ok());
             }
         }
+        let snap = cap.intel_rapl.snapshot().unwrap();
+        assert_eq!(snap.sockets.len(), cap.intel_rapl.sockets.len());
     }
 }
