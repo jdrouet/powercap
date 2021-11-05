@@ -78,6 +78,7 @@ impl Domain {
     }
 }
 
+#[derive(Debug)]
 pub struct DomainSnapshot {
     pub id: u8,
     pub name: String,
@@ -170,6 +171,7 @@ impl Socket {
     }
 }
 
+#[derive(Debug)]
 pub struct SocketSnapshot {
     pub id: u8,
     pub enabled: bool,
@@ -233,6 +235,7 @@ impl IntelRapl {
     }
 }
 
+#[derive(Debug)]
 pub struct IntelRaplSnapshot {
     pub sockets: Vec<SocketSnapshot>,
 }
