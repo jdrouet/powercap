@@ -9,7 +9,7 @@ use std::collections::HashMap;
 use std::convert::TryFrom;
 use std::fs;
 use std::io::Error as IoError;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 #[derive(Debug)]
 pub enum BuildError {
@@ -264,13 +264,27 @@ impl TryFrom<PathBuf> for PowerCap {
     }
 }
 
+impl TryFrom<&Path> for PowerCap {
+    type Error = BuildError;
+
+    /// Creates a PowerCap instance using the speficied powercap path.
+    fn try_from(value: &Path) -> Result<Self, Self::Error> {
+        Ok(Self {
+            intel_rapl: IntelRapl::try_from(value.join("intel-rapl"))?,
+        })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::PowerCap;
+    use std::convert::TryFrom;
+    use std::path::PathBuf;
 
     #[test]
     fn build_and_measure() {
-        let cap = PowerCap::try_default().unwrap();
+        let root = PathBuf::from(".").join("assets").join("success");
+        let cap = PowerCap::try_from(root).unwrap();
         let value = cap.intel_rapl.total_energy().unwrap();
         assert_ne!(value, 0);
         for socket in cap.intel_rapl.sockets.values() {
