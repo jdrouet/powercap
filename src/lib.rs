@@ -60,7 +60,6 @@ impl Domain {
     /// Returns amount of energy used by the socket.
     /// The returned value is in micro joules.
     pub fn energy(&self) -> Result<u64, ReadError> {
-        println!("Domain {:?}", self.energy);
         self.energy.read()
     }
 
