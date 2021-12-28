@@ -16,7 +16,7 @@ modules = ["procfs"]
 
 [dependencies]
 regex = { default-features = false, features = ["std", "unicode-perl"], version = "^1.5" }
-procfs = { default-features = false, version = "^0.11", optional = true }
+procfs = { default-features = false, version = "^0.12", optional = true }
 
 [dev-dependencies]
 criterion = "0.3"
