@@ -367,6 +367,8 @@ dependencies = [
  "criterion",
  "procfs",
  "regex",
+ "serde",
+ "serde_json",
  "temp-dir",
 ]
 
@@ -489,6 +491,9 @@ name = "serde"
 version = "1.0.132"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b9875c23cf305cd1fd7eb77234cbb705f21ea6a72c637a5c6db5fe4b8e7f008"
+dependencies = [
+ "serde_derive",
+]
 
 [[package]]
 name = "serde_cbor"

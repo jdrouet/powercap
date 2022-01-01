@@ -81,6 +81,7 @@ impl Domain {
 }
 
 #[derive(Debug)]
+#[cfg_attr(feature = "with-serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct DomainSnapshot {
     pub id: u8,
     pub name: String,
@@ -174,6 +175,7 @@ impl Socket {
 }
 
 #[derive(Debug)]
+#[cfg_attr(feature = "with-serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct SocketSnapshot {
     pub id: u8,
     pub enabled: bool,
@@ -238,6 +240,7 @@ impl IntelRapl {
 }
 
 #[derive(Debug)]
+#[cfg_attr(feature = "with-serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct IntelRaplSnapshot {
     pub sockets: Vec<SocketSnapshot>,
 }
@@ -277,9 +280,9 @@ impl TryFrom<&Path> for PowerCap {
     }
 }
 
-#[cfg(all(test, feature = "mock"))]
+#[cfg(all(test, feature = "mock", feature = "with-serde"))]
 mod tests {
-    use super::PowerCap;
+    use super::{DomainSnapshot, PowerCap};
     use crate::mock::MockBuilder;
     use std::convert::TryFrom;
     use temp_dir::TempDir;
@@ -312,5 +315,31 @@ mod tests {
         }
         let snap = cap.intel_rapl.snapshot().unwrap();
         assert_eq!(snap.sockets.len(), cap.intel_rapl.sockets.len());
+        assert!(serde_json::to_string(&snap).is_ok());
+    }
+
+    #[test]
+    fn serialize_all() {
+        let root = TempDir::new().unwrap();
+        MockBuilder::default().build(root.path()).unwrap();
+        let cap = PowerCap::try_from(root.path()).unwrap();
+        let snap = cap.intel_rapl.snapshot().unwrap();
+        assert!(serde_json::to_string(&snap).is_ok());
+    }
+
+    #[test]
+    fn serializing_domain() {
+        let value = DomainSnapshot {
+            id: 0,
+            name: "name".into(),
+            enabled: true,
+            energy: 42,
+            max_energy_range: 60,
+        };
+        let json = serde_json::to_string(&value).unwrap();
+        assert_eq!(
+            json,
+            "{\"id\":0,\"name\":\"name\",\"enabled\":true,\"energy\":42,\"max_energy_range\":60}"
+        );
     }
 }
