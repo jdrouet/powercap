@@ -362,7 +362,7 @@ dependencies = [
 
 [[package]]
 name = "powercap"
-version = "0.3.3"
+version = "0.3.4"
 dependencies = [
  "criterion",
  "procfs",
