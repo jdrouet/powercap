@@ -2,7 +2,7 @@
 name = "powercap"
 description = "Library for reading powercap files"
 edition = "2018"
-version = "0.3.4"
+version = "0.3.5"
 authors = ["Jeremie Drouet <jeremie.drouet@gmail.com>"]
 repository = "https://github.com/jdrouet/powercap"
 license = "MIT OR Apache-2.0"
