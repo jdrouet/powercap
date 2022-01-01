@@ -1,12 +1,15 @@
+#[cfg(feature = "mock")]
 use criterion::{criterion_group, criterion_main, Criterion};
 use powercap::PowerCap;
 use std::convert::TryFrom;
-use std::path::PathBuf;
 
 pub fn criterion_benchmark(c: &mut Criterion) {
-    let root = PathBuf::from(".").join("assets").join("success");
+    let root = temp_dir::TempDir::new().unwrap();
+    powercap::mock::MockBuilder::default()
+        .build(root.path())
+        .unwrap();
     c.bench_function("success", |b| {
-        b.iter(|| PowerCap::try_from(root.clone()).is_ok())
+        b.iter(|| PowerCap::try_from(root.path()).is_ok())
     });
 }
 
