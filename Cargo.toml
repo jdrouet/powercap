@@ -13,6 +13,7 @@ keywords = ["powercap", "rapl"]
 [features]
 default = ["modules"]
 modules = ["procfs"]
+mock = []
 
 [dependencies]
 regex = { default-features = false, features = ["std", "unicode-perl"], version = "^1.5" }
@@ -20,6 +21,7 @@ procfs = { default-features = false, version = "^0.11", optional = true }
 
 [dev-dependencies]
 criterion = "0.3"
+temp-dir = "0.1"
 
 [[bench]]
 name = "parsing"

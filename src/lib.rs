@@ -1,5 +1,7 @@
 #[cfg(feature = "modules")]
 pub mod helper;
+#[cfg(feature = "mock")]
+pub mod mock;
 mod reader;
 
 pub use crate::reader::ReadError;
@@ -275,16 +277,18 @@ impl TryFrom<&Path> for PowerCap {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "mock"))]
 mod tests {
     use super::PowerCap;
+    use crate::mock::MockBuilder;
     use std::convert::TryFrom;
-    use std::path::PathBuf;
+    use temp_dir::TempDir;
 
     #[test]
     fn build_and_measure() {
-        let root = PathBuf::from(".").join("assets").join("success");
-        let cap = PowerCap::try_from(root).unwrap();
+        let root = TempDir::new().unwrap();
+        MockBuilder::default().build(root.path()).unwrap();
+        let cap = PowerCap::try_from(root.path()).unwrap();
         let value = cap.intel_rapl.total_energy().unwrap();
         assert_ne!(value, 0);
         for socket in cap.intel_rapl.sockets.values() {
