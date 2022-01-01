@@ -2,7 +2,7 @@
 name = "powercap"
 description = "Library for reading powercap files"
 edition = "2018"
-version = "0.3.1"
+version = "0.3.3"
 authors = ["Jeremie Drouet <jeremie.drouet@gmail.com>"]
 repository = "https://github.com/jdrouet/powercap"
 license = "MIT OR Apache-2.0"
@@ -17,7 +17,7 @@ mock = []
 
 [dependencies]
 regex = { default-features = false, features = ["std", "unicode-perl"], version = "^1.5" }
-procfs = { default-features = false, version = "^0.12", optional = true }
+procfs = { default-features = false, version = "^0.11", optional = true }
 
 [dev-dependencies]
 criterion = "0.3"
