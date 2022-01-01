@@ -221,7 +221,7 @@ impl IntelRapl {
     pub fn total_energy(&self) -> Result<u64, reader::ReadError> {
         let mut res = 0;
         for (_, item) in self.sockets.iter() {
-            res += item.energy()?;
+            res += item.total_energy()?;
         }
         Ok(res)
     }
@@ -287,19 +287,27 @@ mod tests {
     #[test]
     fn build_and_measure() {
         let root = TempDir::new().unwrap();
-        MockBuilder::default().build(root.path()).unwrap();
+        MockBuilder::default()
+            .with_enabled(true)
+            .with_sockets(1)
+            .with_socket_energy_generator(Box::new(|_| 100))
+            .with_socket_max_energy_range_generator(Box::new(|_| 500))
+            .with_domain_energy_generator(Box::new(|_, _| 10))
+            .with_domain_max_energy_range_generator(Box::new(|_, _| 50))
+            .build(root.path())
+            .unwrap();
         let cap = PowerCap::try_from(root.path()).unwrap();
         let value = cap.intel_rapl.total_energy().unwrap();
-        assert_ne!(value, 0);
+        assert_eq!(value, 130);
         for socket in cap.intel_rapl.sockets.values() {
-            assert!(socket.enabled().is_ok());
-            assert!(socket.energy().is_ok());
-            assert!(socket.max_energy_range().is_ok());
-            assert!(socket.total_energy().is_ok());
+            assert!(socket.enabled().unwrap());
+            assert_eq!(socket.energy().unwrap(), 100);
+            assert_eq!(socket.max_energy_range().unwrap(), 500);
+            assert_eq!(socket.total_energy().unwrap(), 130);
             for domain in socket.domains.values() {
                 assert!(domain.name().is_ok());
-                assert!(domain.energy().is_ok());
-                assert!(domain.max_energy_range().is_ok());
+                assert_eq!(domain.energy().unwrap(), 10);
+                assert_eq!(domain.max_energy_range().unwrap(), 50);
             }
         }
         let snap = cap.intel_rapl.snapshot().unwrap();
