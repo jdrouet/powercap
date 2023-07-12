@@ -17,7 +17,7 @@ mock = []
 with-serde = ["serde"]
 
 [dependencies]
-regex = { default-features = false, features = ["std", "unicode-perl"], version = "^1.8" }
+regex = { default-features = false, features = ["std", "unicode-perl"], version = "^1.9" }
 procfs = { default-features = false, version = "^0.15", optional = true }
 serde = { version = "1", features = ["derive"], optional = true }
 
